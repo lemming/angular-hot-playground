@@ -1,0 +1,11 @@
+{
+    "preset": "yandex",
+    "requireSpacesInAnonymousFunctionExpression": {
+        "beforeOpeningCurlyBrace": true
+    },
+    "disallowSpacesInAnonymousFunctionExpression": {
+        "beforeOpeningRoundBrace": true
+    },
+    "requireCurlyBraces": null,
+    "esnext": true
+}

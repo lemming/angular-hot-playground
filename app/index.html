@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+  <meta charset="UTF-8">
+  <title>Angular Webpack Demo</title>
+</head>
+<body>
+  <a ui-sref="page-one">One</a>
+  <a ui-sref="page-two">Two (authenticated)</a>
+  <a ui-sref="page-three">Three</a>
+  <a ui-sref="lazy-module">Lazy Module</a>
+
+  <hello></hello>
+  <ui-view></ui-view>
+  <script src="vendor.bundle.js"></script>
+  <script src="bundle.js"></script>
+</body>
+</html>
