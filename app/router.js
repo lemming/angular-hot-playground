@@ -47,14 +47,7 @@ function config($stateProvider, $locationProvider, $urlRouterProvider, $controll
 
     $stateProvider.state('page-three', {
         url: '/page-three',
-        templateProvider: function($q) {
-            const deferred = $q.defer();
-            require.ensure(['./pages/page-three.html'], function() {
-                const template = require('./pages/page-three.html');
-                deferred.resolve(template);
-            }, 'pageThree');
-            return deferred.promise;
-        },
+        template: require('./pages/page-three.html'),
         controller: 'PageThreeController',
         controllerAs: 'vm',
         resolve: {
@@ -71,7 +64,14 @@ function config($stateProvider, $locationProvider, $urlRouterProvider, $controll
 
     $stateProvider.state('lazy-module', {
         url: '/lazy-module',
-        template: require('./pages/lazyModule/lazy.html'),
+        templateProvider: function($q) {
+            const deferred = $q.defer();
+            require.ensure(['./pages/lazyModule/lazy.html'], function() {
+                const template = require('./pages/lazyModule/lazy.html');
+                deferred.resolve(template);
+            }, 'lazyModule');
+            return deferred.promise;
+        },
         controller: 'LazyController',
         controllerAs: 'vm',
         resolve: {
@@ -100,5 +100,15 @@ function run($rootScope, $state, Auth) {
 
         Auth.onLoginSuccess(() => $state.go(toState.name, toParams));
         $state.go('login');
+    });
+}
+
+// check if HMR is enabled
+if (module.hot) {
+
+    module.hot.accept('./pages/lazyModule/lazy.html', function() {
+        const $state = angular.element(document.body).injector().get('$state');
+
+        $state.reload();
     });
 }

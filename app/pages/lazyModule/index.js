@@ -8,7 +8,6 @@ export default angular => {
 if (module.hot) {
 
     module.hot.accept('./lazyController.js', function() {
-
         const currentModule = angular.module('lazyModule');
 
         currentModule.config(function($controllerProvider) {
@@ -17,6 +16,7 @@ if (module.hot) {
 
         require('./lazyController.js')(currentModule);
 
+        // TODO: reload specific state which is bound with controller
         const $state = angular.element(document.body).injector().get('$state');
 
         $state.reload();
