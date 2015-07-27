@@ -62,6 +62,23 @@ function config($stateProvider, $locationProvider, $urlRouterProvider, $controll
         }
     });
 
+    $stateProvider.state('page-three.beyond', {
+        url: '/beyond',
+        template: require('./pages/page-three-beyond.html'),
+        controller: 'PageThreeBeyondController',
+        controllerAs: 'vm',
+        resolve: {
+            module: function($q) {
+                const deferred = $q.defer();
+                require.ensure(['./pages/page-three-beyond'], function(require) {
+                    require('./pages/page-three-beyond')($controllerProvider);
+                    deferred.resolve();
+                }, 'pageThree');
+                return deferred.promise;
+            }
+        }
+    });
+
     $stateProvider.state('lazy-module', {
         url: '/lazy-module',
         templateProvider: function($q) {
@@ -109,6 +126,59 @@ if (module.hot) {
     module.hot.accept('./pages/lazyModule/lazy.html', function() {
         const $state = angular.element(document.body).injector().get('$state');
 
+        console.log($state);
+
         $state.reload();
+    });
+
+    module.hot.accept('./pages/page-one.html', function() {
+        const $state = angular.element(document.body).injector().get('$state');
+
+        if ($state.current.name === 'page-one') {
+            $state.current.template = require('./pages/page-one.html');
+            $state.reload();
+        }
+    });
+
+    module.hot.accept('./pages/page-three-beyond.html', function() {
+
+        const $state = angular.element(document.body).injector().get('$state');
+
+        function findState(name, state) {
+            if (state.self.name == name) return state.self;
+
+            if (!state.parent) return null;
+
+            return findState(name, state.parent);
+        }
+
+        if (!$state.includes('page-three.beyond')) return;
+
+        const state = findState('page-three.beyond', $state.$current);
+
+        state.template = require('./pages/page-three-beyond.html');
+
+        $state.reload('page-three.beyond');
+    });
+
+    module.hot.accept('./pages/page-three.html', function() {
+
+        const $state = angular.element(document.body).injector().get('$state');
+
+        function findState(name, state) {
+            if (state.self.name == name) return state.self;
+
+            if (!state.parent) return null;
+
+            return findState(name, state.parent);
+        }
+
+        if (!$state.includes('page-three')) return;
+
+        const state = findState('page-three', $state.$current);
+
+        state.template = require('./pages/page-three.html');
+
+        $state.reload('page-three');
     });
 }
