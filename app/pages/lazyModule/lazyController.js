@@ -2,7 +2,7 @@ import './lazy.scss';
 
 export default ngModule => {
     ngModule.controller('LazyController', LazyController);
-}
+};
 
 function LazyController() {
     const vm = this;

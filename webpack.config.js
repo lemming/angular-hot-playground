@@ -16,6 +16,9 @@ module.exports = {
         chunkFilename: '[name].bundle.js'
     },
     module: {
+        preLoaders: [
+            {test: /\/index.js$/, loader: path.join(APP_LOCATION, '../angular-hot-loader'), exclude: /node_module/}
+        ],
         loaders: [
             {
                 test: /\.scss$/,
