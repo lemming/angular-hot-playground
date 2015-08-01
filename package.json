@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base app/ --hot --inline --module-bind \"css=style!css\" --progress --colors"
+    "start": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base app/ --hot --inline --module-bind \"css=style!css\" --progress --colors"
   },
   "author": "Alexey Tcherevatov <alexey@tcherevatov.ru>",
   "contributors": [{

@@ -7,7 +7,7 @@ export default ngModule => {
 function LazyController() {
     const vm = this;
 
-    vm.greeting = 'hot replacement is awesome: 5';
+    vm.greeting = 'hot replacement is awesome: 1';
 
     console.log('lazyController is here!!');
 }

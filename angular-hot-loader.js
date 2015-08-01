@@ -3,31 +3,53 @@ function stringify(callback) {
     return str.slice(str.indexOf('{') + 1, str.lastIndexOf('}'));
 }
 
+function extractControllers(source) {
+    var regex = /require\('(?=[^']*Controller)(.*?)'\)/g;
+    var controllers = [];
+
+    while (matches = regex.exec(source)) {
+        controllers.push(matches[1]);
+    }
+
+    return controllers;
+}
+
 module.exports = function(source) {
     this.cacheable();
 
-    if (!/angular\.module\('lazyModule'/.test(source)) {
-        return source;
-    }
+    var matches = source.match(/angular\.module\(\'(\w+)\',\s*\[/);
 
-    var addition = stringify(function() {
-        if (module.hot) {
-            module.hot.accept('./lazyController.js', function() {
-                var currentModule = angular.module('lazyModule');
+    if (!matches) return source;
 
-                currentModule.config(function($controllerProvider) {
-                    currentModule.controller = $controllerProvider.register;
+    var moduleName = matches[1];
+
+    var controllers = extractControllers(source);
+
+    if (!controllers.length) return source;
+
+    var addition = 'if (module.hot) {\n' +
+        controllers.map(function(controllerPath) {
+            return stringify(function() {
+                module.hot.accept(controllerPath, function() {
+                    var ngModule = angular.module(moduleName);
+
+                    ngModule.config(function($controllerProvider) {
+                        ngModule.controller = $controllerProvider.register;
+                    });
+
+                    require(controllerPath)(ngModule);
+
+                    var $state = angular.element(document.body).injector().get('$state');
+
+                    // TODO: if $state includes state containing this controller
+                    $state.reload();
                 });
+            })
+            .replace(/\bmoduleName\b/g, JSON.stringify(moduleName))
+            .replace(/\bcontrollerPath\b/g, JSON.stringify(controllerPath));
+        }).join('\n') +
+        '\n}';
 
-                require('./lazyController.js')(currentModule);
-
-                var $state = angular.element(document.body).injector().get('$state');
-
-                // TODO: if $state includes state containing this controller
-                $state.reload();
-            });
-        }
-    });
 
     return [source, addition].join('\n\n');
 };
